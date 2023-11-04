@@ -1,34 +1,12 @@
-/* style.css */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    color: #333333;
-}
-
 .container {
     display: flex;
 }
 
 .sidebar {
     width: 20%;
-    background-color: #ddd;
+    background-color: #f0f0f0;
     padding: 20px;
-}
-
-.subject-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 10px 0;
-    cursor: pointer;
-    border: none;
-    width: 100%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
 }
 
 .main-content {
@@ -36,11 +14,24 @@ body {
     padding: 20px;
 }
 
-h2 {
-    margin-bottom: 20px;
+.subject-button {
+    display: block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.chat-container {
+.subject-button:hover {
+    background-color: #45a049;
+}
+
+.chat-area {
     background-color: #fff;
     border: 1px solid #ccc;
     height: 400px;
@@ -49,45 +40,50 @@ h2 {
     margin-bottom: 10px;
 }
 
-.chat-input {
-    display: flex;
-}
-
-.chat-input input {
-    flex-grow: 1;
-    padding: 10px;
-    margin-right: 10px;
-}
-
-.chat-input button, .quiz-button {
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.quiz-button{
-    margin-top: 10px;
-    width: 100%;
-}
-
-.message {
+.bot-message {
+    background-color: #f0f0f0;
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
-    max-width: 70%;
-}
-
-.bot-message {
-    background-color: #e0e0e0;
-    align-self: flex-start;
 }
 
 .user-message {
     background-color: #4CAF50;
     color: white;
-    align-self: flex-end;
-    text-align: right;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
 }
 
+.chat-input {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.chat-input input {
+    flex-grow: 2;
+    padding: 10px;
+    margin-right: 10px;
+}
+
+.chat-input button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.quiz-button {
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.quiz-button:hover {
+    background-color: #0056b3;
+}

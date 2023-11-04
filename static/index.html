@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html> -->
 <html>
 <head>
     <title>Education Platform - Student Dashboard</title>
@@ -8,21 +8,27 @@
     <div class="container">
         <div class="sidebar">
             <h2>Subjects</h2>
-            <button class="subject-button" onclick="showMessage('Mathematics')">Mathematics</button>
-            <button class="subject-button" onclick="showMessage('Science')">Science</button>
-            <button class="subject-button" onclick="showMessage('History')">History</button>
-            <!-- More subjects here -->
+            <button class="subject-button" onclick="setSubject('Mathematics')">Mathematics</button>
+            <button class="subject-button" onclick="setSubject('Science')">Science</button>
+            <button class="subject-button" onclick="setSubject('History')">History</button>
         </div>
         <div class="main-content">
             <h2>Hi Student!</h2>
-            <div class="chat-container" id="chat-container">
-                <!-- Chat history will be displayed here -->
+            <div class="chat-area" id="chat-area-Mathematics">
+                <!-- Chat history for Mathematics will be displayed here -->
             </div>
+            <div class="chat-area" id="chat-area-Science" style="display:none;">
+                <!-- Chat history for Science will be displayed here -->
+            </div>
+            <div class="chat-area" id="chat-area-History" style="display:none;">
+                <!-- Chat history for History will be displayed here -->
+            </div>
+            <!-- ... other subjects ... -->
             <div class="chat-input">
                 <input type="text" placeholder="Type your question..." id="chat-input">
                 <button onclick="sendMessage()">Send</button>
             </div>
-            <button class="quiz-button">Generate Quiz</button>
+            <button class="quiz-button" onclick="generateQuiz()">Generate Quiz</button>
         </div>
     </div>
     <script src="script.js"></script>

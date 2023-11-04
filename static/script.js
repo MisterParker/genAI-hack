@@ -1,15 +1,93 @@
-// script.js
-function showMessage(subject) {
-    var chatContainer = document.getElementById('chat-container');
-    var message = `Welcome to ${subject}! Here's what you need to work on today...`;
-    chatContainer.innerHTML = `<div class="message">${message}</div>`;
+// Global variable to store the selected subject
+let selectedSubject = null;
+
+// Function to display a message in the chat area
+function displayMessage(sender, message, subject) {
+    // Create message element
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', `${sender}-message`);
+    
+    // Create content element
+    const contentElement = document.createElement('div');
+    contentElement.classList.add('message-content');
+    contentElement.textContent = message;
+    
+    // Append content to message
+    messageElement.appendChild(contentElement);
+    
+    // Append message to chat area
+    document.getElementById(`chat-area-${subject}`).appendChild(messageElement);
 }
 
+// Function to set the subject and initialize chat
+function setSubject(subject) {
+    // Hide all chat areas
+    const chatAreas = document.querySelectorAll('.chat-area');
+    chatAreas.forEach(chatArea => {
+        chatArea.style.display = 'none';
+    });
+
+    // Show the selected chat area
+    document.getElementById(`chat-area-${subject}`).style.display = 'block';
+    selectedSubject = subject;  // Set the selected subject globally
+
+    // Display the default message
+    displayMessage('bot', `Hello! Today, you need to work on ${subject}. How can I assist you?`, subject);
+    
+    // Set subject on server
+    fetch('/set_subject', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `subject=${subject}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            alert('Failed to set subject.');
+        }
+    });
+}
+
+// Function to send a message
 function sendMessage() {
-    var chatInput = document.getElementById('chat-input');
-    var chatContainer = document.getElementById('chat-container');
-    var userMessage = chatInput.value;
-    chatContainer.innerHTML += `<div class="message user-message">${userMessage}</div>`;
-    // You can add code here to send the message to the server and get a response
-    chatInput.value = '';
+    // Get user input
+    const inputElement = document.getElementById('chat-input');
+    const userMessage = inputElement.value;
+    inputElement.value = '';
+
+    // Display user message
+    displayMessage('user', userMessage, selectedSubject);
+
+    // Fetch response from server
+    fetch('/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ user_input: userMessage })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Display bot response
+        displayMessage('bot', data.response, selectedSubject);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+// Function to generate quiz
+function generateQuiz() {
+    // Fetch quiz from server
+    fetch('/generate_quiz')
+    .then(response => response.json())
+    .then(data => {
+        // Display quiz
+        displayMessage('bot', data.quiz, selectedSubject);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
