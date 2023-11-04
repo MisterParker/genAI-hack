@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Education Platform - Student Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Subjects</h2>
+            <button class="subject-button" onclick="showMessage('Mathematics')">Mathematics</button>
+            <button class="subject-button" onclick="showMessage('Science')">Science</button>
+            <button class="subject-button" onclick="showMessage('History')">History</button>
+            <!-- More subjects here -->
+        </div>
+        <div class="main-content">
+            <h2>Hi Student!</h2>
+            <div class="chat-container" id="chat-container">
+                <!-- Chat history will be displayed here -->
+            </div>
+            <div class="chat-input">
+                <input type="text" placeholder="Type your question..." id="chat-input">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+            <button class="quiz-button">Generate Quiz</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
