@@ -92,3 +92,4 @@ function generateQuiz() {
         console.error('Error:', error);
     });
 }
+

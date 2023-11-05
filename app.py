@@ -6,12 +6,18 @@ import traceback
 from flask_cors import CORS
 import pdfplumber
 import openai
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__, static_url_path='', static_folder='static')
 app.secret_key = 'ABCDEF45654'
 CORS(app)
 app.config['SESSION_COOKIE_SECURE'] = False
-os.environ['OPENAI_API_KEY'] = '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'
+openai_api_key = os.getenv('OPENAI_API_KEY')
+os.environ['OPENAI_API_KEY'] = openai_api_key
+
+# Global variable to store the summary
+generated_summary = ""
 
 def call_gpt_model(prompt):
     # Simulate calling a GPT-based model to generate a quiz based on the prompt
@@ -35,22 +41,6 @@ def call_gpt_model(prompt):
     # Combining the quiz questions into a quiz
     quiz = "Here's your quiz:\n\n" + "\n".join(quiz_questions)
     return quiz
-
-def extract_text_from_pdfs(self, subject):
-        parent_directory = "documents"
-        subject_directory = os.path.join(parent_directory, subject)
-        pdf_files = [os.path.join(root, file) for root, _, files in os.walk(subject_directory) for file in files if file.endswith(".pdf")]
-        documents_text = []
-
-        for pdf_path in pdf_files:
-            text = ""
-            with pdfplumber.open(pdf_path) as pdf:
-                for i in range(len(pdf.pages)):
-                    page = pdf.pages[i]
-                    text += page.extract_text()
-            documents_text.append(text)
-
-        return documents_text
 
 
 class Chatbot:
@@ -106,26 +96,67 @@ class Chatbot:
         chat_history.append(response_dict)
         return response_dict
     
+    def extract_text_from_pdfs(self, subject):
+        parent_directory = "documents"
+        subject_directory = os.path.join(parent_directory, subject)
+        pdf_files = [os.path.join(root, file) for root, _, files in os.walk(subject_directory) for file in files if file.endswith(".pdf")]
+        documents_text = []
+
+        for pdf_path in pdf_files:
+            text = ""
+            with pdfplumber.open(pdf_path) as pdf:
+                for i in range(len(pdf.pages)):
+                    page = pdf.pages[i]
+                    text += page.extract_text()
+            documents_text.append(text)
+
+        return documents_text
+    
     def generate_quiz_based_on_history(self, chat_history):
-        quiz_questions = []
-
-        for i, chat in enumerate(chat_history, 1):
-            user_input = chat.get('user_input', '')
-            document_info = self.query_vectorstore(user_input)
-            question = f"Q{i}: Based on your question '{user_input}' and the information '{document_info}', can you explain this concept?"
-            quiz_questions.append(question)
-
-        if not quiz_questions:
+        try:
             subject = session.get('subject')
             documents_text = self.extract_text_from_pdfs(subject)
-            for i in range(10):
-                topic = f"Topic {i+1}"
-                prompt = f"Based on the document information and the chat history, generate a MCQ question for {topic}."
-                question = f"Q{i+1}: {self.call_gpt_model(prompt, documents_text)}"
-                quiz_questions.append(question)
 
-        quiz = "Here's your quiz:\n\n" + "\n".join(quiz_questions)
-        return quiz
+            # Combine document text and chat history
+            combined_text = "\n".join(documents_text + [chat['user_input'] + '\n' + chat['response'] for chat in chat_history])
+
+            # Split combined text into chunks of a certain size
+            chunk_size = 500  # You can adjust the chunk size
+            chunks = [combined_text[i:i+chunk_size] for i in range(0, len(combined_text), chunk_size)]
+
+            openai.api_key = openai_api_key
+            
+            # Summarize each chunk
+            summarized_chunks = []
+            for chunk in chunks:
+                summary_response = openai.Completion.create(
+                    engine="gpt-3.5-turbo-16k",
+                    prompt=f"Please summarize the following text in 100 words or less:\n\n{chunk}",
+                    max_tokens=200,  # Adjust as needed
+                    temperature=0.5
+                )
+                summarized_chunks.append(summary_response.choices[0].text.strip())
+
+            # Combine summarized chunks and generate quiz questions
+            summarized_text = "\n".join(summarized_chunks)
+            prompt = f"Based on the document text:\n\n{summarized_text}\n\nGenerate 10 multiple-choice quiz questions."
+
+            # Call the OpenAI API to generate quiz questions
+            # text-davinci-002 gpt-3.5-turbo-16k
+            quiz_response = openai.completion.create(
+                engine="text-davinci-002",
+                prompt=prompt,
+                max_tokens=100,  # Adjust as needed
+                temperature=0.5
+            )
+
+            quiz = quiz_response.choices[0].text.strip()
+
+            return f"Here's your quiz:\n\n{quiz}"
+        except Exception as e:
+            print("An error occurred while generating quiz: ", str(e))
+            return "I'm sorry, I couldn't generate the quiz."
+
 
 chatbot = Chatbot()
 
@@ -173,6 +204,11 @@ def chat():
         traceback.print_exc()
         return jsonify({'error': 'An unexpected error occurred'}), 500
 
+@app.route('/get_summary', methods=['GET'])
+def get_summary():
+    global generated_summary
+    return jsonify({'summary': generated_summary})
+
 @app.route('/generate_quiz_v2', methods=['GET'])
 def generate_quiz():
     subject = session.get('subject')
@@ -186,13 +222,16 @@ def generate_quiz():
 
 @app.route('/summarize', methods=['POST'])
 def summarize_text():
+    global generated_summary
     try:
         data = request.json
         text = data.get('text', '')
+        subject = data.get('subject', '')
         print('text received for summarizing: ', text)
+        print('subject received: ', subject)
 
         # Replace the following lines with actual summarization logic using OpenAI
-        openai.api_key = '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'  # Replace with your OpenAI API key
+        openai.api_key = openai_api_key  # Replace with your OpenAI API key
 
         # Call the OpenAI API to get the summary
         response = openai.Completion.create(
@@ -205,7 +244,8 @@ def summarize_text():
         print('response received: ', response)
         summary = response.choices[0].text.strip()
         print("Generated summary:", summary)  # Debug print
-        return jsonify({'summary': summary})
+        generated_summary = summary
+        return jsonify({'subject': subject, 'summary': summary})
     except Exception as e:
         print("An error occurred: ", str(e))
         return jsonify({'error': 'An unexpected error occurred'}), 500

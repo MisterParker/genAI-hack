@@ -8,7 +8,15 @@
     <header class="header">
         <div class="logo">Education Platform</div>
         <nav class="nav">
-            <a href="/" class="nav-link active">Student</a>
+            <!-- <a href="/" class="nav-link">Student</a> -->
+            <div class="dropdown">
+                <a href="/" class="nav-link dropdown-toggle active" target="_blank">Student</a>
+                <div class="dropdown-content">
+                    <a href="#">Manage Classes</a>
+                    <a href="#">Track Students</a>
+                    <a href="#">Resources</a>
+                </div>
+            </div>
     
             <!-- Add dropdown for Teacher -->
             <div class="dropdown">
@@ -31,6 +39,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <div class="sidebar">
             <h2>Subjects</h2>

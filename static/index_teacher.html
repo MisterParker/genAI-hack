@@ -9,7 +9,7 @@
         <nav class="nav">
             <!-- <a href="/" class="nav-link">Student</a> -->
             <div class="dropdown">
-                <a href="/" class="nav-link dropdown-toggle">Student</a>
+                <a href="/" class="nav-link dropdown-toggle" target="_blank">Student</a>
                 <div class="dropdown-content">
                     <a href="#">Manage Classes</a>
                     <a href="#">Track Students</a>
@@ -41,6 +41,13 @@
     <div class="container">
         <div class="main-content">
             <h2>Teacher Dashboard</h2>
+            <!-- Subject Dropdown -->
+            <div>
+                <label for="subject-dropdown">Select Subject: </label>
+                <select id="subject-dropdown">
+                    <!-- Options will be dynamically populated -->
+                </select>
+            </div>
             <button id="start-btn" class="transcribe-button">Start Transcription</button>
             <button id="stop-btn" class="transcribe-button">Stop Transcription</button>
             <div id="recording-dot" class="recording-dot"></div>
@@ -58,6 +65,8 @@
                 <h4>Summary:</h4>
                 <div id="summary" style="margin-top: 10px;"></div>
             </div>
+
+            <a href="https://8khtzvwjzdq58jkvouuohc.streamlit.app/" target="_blank"><button class="quiz-button">Chat based on the summary</button></a>
         </div>
     </div>
 
@@ -66,6 +75,17 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+        // Function to populate subject dropdown
+        function populateSubjectDropdown() {
+            var subjects = ["Mathematics", "Science", "History"];  // Add more subjects as needed
+            var dropdown = document.getElementById('subject-dropdown');
+            subjects.forEach(function(subject) {
+                var option = document.createElement('option');
+                option.value = subject;
+                option.innerText = subject;
+                dropdown.appendChild(option);
+            });
+        }
         // Check if the browser supports the Web Speech API
         if (!('webkitSpeechRecognition' in window)) {
             alert("Your browser does not support the Web Speech API. Please use Google Chrome.");
@@ -104,15 +124,16 @@
                 document.getElementById('recording-dot').style.display = 'none'; // Hide red dot when recognition ends
             };
         }
-
+        populateSubjectDropdown();
         // Function to summarize text
         function summarizeText(text) {
+            var subject = document.getElementById('subject-dropdown').value;
             fetch('/summarize', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({text: text}),
+                body: JSON.stringify({text: text, subject: subject}),
             })
             .then(response => response.json())
             .then(data => {
