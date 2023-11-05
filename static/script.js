@@ -47,8 +47,21 @@ function setSubject(subject) {
         if (!data.success) {
             alert('Failed to set subject.');
         }
+        // Fetch and display the summary
+        return fetch('/get_summary', {
+            method: 'GET'
+        });
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Display the summary message
+        displayMessage('bot', `This was taught in class today: ${data.summary}`, selectedSubject);
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
 }
+
 
 // Function to send a message
 function sendMessage() {
