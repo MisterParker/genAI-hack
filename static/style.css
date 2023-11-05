@@ -1,3 +1,85 @@
+/* Add these styles to style.css */
+.header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #4CAF50;
+    padding: 10px 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.nav {
+    display: flex;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #45a049;
+}
+
+.nav-link.active {
+    line-height: 30px;  
+    background-color: #fff;
+    color: #4CAF50;
+}
+
+/* Style dropdown container */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    height: 100%; 
+    line-height: 50px;  
+}
+
+/* Style dropdown content (hidden by default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+    border-radius: 5px;
+}
+
+/* Style dropdown links */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s;
+    line-height: normal;
+}
+
+/* Style dropdown links on hover */
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Show dropdown content on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Style dropdown toggle */
+.dropdown-toggle:hover {
+    background-color: #45a049;
+}
+
 .container {
     display: flex;
 }
@@ -31,10 +113,40 @@
     background-color: #45a049;
 }
 
+.manual-text{
+    width: 100%;
+}
+
+.transcribe-button {
+    display: block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    /* width: 100%; */
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.transcribe-button:hover {
+    background-color: #45a049;
+}
+
 .chat-area {
     background-color: #fff;
     border: 1px solid #ccc;
     height: 400px;
+    padding: 20px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.transcribe-area {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    min-height: 50px;
     padding: 20px;
     overflow-y: auto;
     margin-bottom: 10px;
@@ -86,4 +198,14 @@
 
 .quiz-button:hover {
     background-color: #0056b3;
+}
+
+.recording-dot {
+    display: none;
+    height: 10px;
+    width: 10px;
+    background-color: red;
+    border-radius: 50%;
+    margin-left: 10px;
+    margin-top: 14px;
 }

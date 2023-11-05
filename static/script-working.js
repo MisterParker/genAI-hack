@@ -81,12 +81,11 @@ function sendMessage() {
 // Function to generate quiz
 function generateQuiz() {
     // Fetch quiz from server
-    fetch('/generate_quiz_v2')
+    fetch('/generate_quiz')
     .then(response => response.json())
     .then(data => {
         // Display quiz
         displayMessage('bot', data.quiz, selectedSubject);
-        console.log(data);
     })
     .catch(error => {
         console.error('Error:', error);

@@ -1,0 +1,136 @@
+<html>
+<head>
+    <title>Education Platform - Teacher Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Education Platform</div>
+        <nav class="nav">
+            <!-- <a href="/" class="nav-link">Student</a> -->
+            <div class="dropdown">
+                <a href="/" class="nav-link dropdown-toggle">Student</a>
+                <div class="dropdown-content">
+                    <a href="#">Manage Classes</a>
+                    <a href="#">Track Students</a>
+                    <a href="#">Resources</a>
+                </div>
+            </div>
+    
+            <!-- Add dropdown for Teacher -->
+            <div class="dropdown">
+                <a href="/teacher" class="nav-link dropdown-toggle active">Teacher</a>
+                <div class="dropdown-content">
+                    <a href="#">Manage Classes</a>
+                    <a href="#">Track Students</a>
+                    <a href="#">Resources</a>
+                </div>
+            </div>
+    
+            <!-- Add dropdown for Class -->
+            <div class="dropdown">
+                <a href="#" class="nav-link dropdown-toggle">Class</a>
+                <div class="dropdown-content">
+                    <a href="#">Manage Class</a>
+                    <a href="#">Live Transcribe</a>
+                    <a href="#">Discussion Forum</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="main-content">
+            <h2>Teacher Dashboard</h2>
+            <button id="start-btn" class="transcribe-button">Start Transcription</button>
+            <button id="stop-btn" class="transcribe-button">Stop Transcription</button>
+            <div id="recording-dot" class="recording-dot"></div>
+            <div class="mt-3">
+                <h4>Manual Text Entry:</h4>
+                <textarea id="manual-text" class="form-control" rows="4" style="width: 100%;"></textarea>
+                <button id="summarize-btn" class="subject-button mt-2">Summarize</button>
+            </div>
+            <div class="transcribe-area mt-3">
+                <h4>Transcription:</h4>
+                <p id="transcription"></p>
+            </div>
+            
+            <div class="transcribe-area mt-3">
+                <h4>Summary:</h4>
+                <div id="summary" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Check if the browser supports the Web Speech API
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Your browser does not support the Web Speech API. Please use Google Chrome.");
+        } else {
+            var recognition = new webkitSpeechRecognition();
+            recognition.continuous = true; // Keep the recognition system active
+            recognition.interimResults = true; // Return interim results
+            recognition.lang = 'en-US';
+    
+            var finalTranscript = '';
+    
+            document.getElementById('start-btn').addEventListener('click', function() {
+                recognition.start();
+                document.getElementById('recording-dot').style.display = 'inline-block'; // Show red dot
+            });
+    
+            document.getElementById('stop-btn').addEventListener('click', function() {
+                recognition.stop();
+        document.getElementById('recording-dot').style.display = 'none'; // Hide red dot
+            });
+    
+            recognition.onresult = function(event) {
+                var interimTranscript = '';
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                document.getElementById('transcription').innerText = finalTranscript + ' ' + interimTranscript;
+            };
+    
+            recognition.onend = function() {
+                // recognition.start(); // Restart recognition when it ends
+                document.getElementById('recording-dot').style.display = 'none'; // Hide red dot when recognition ends
+            };
+        }
+
+        // Function to summarize text
+        function summarizeText(text) {
+            fetch('/summarize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({text: text}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('summary').innerText = data.summary;
+            });
+        }
+
+        // Summarize button click event
+        document.getElementById('summarize-btn').addEventListener('click', function() {
+            var manualText = document.getElementById('manual-text').value;
+            summarizeText(manualText);
+        });
+
+        // Stop button click event
+        document.getElementById('stop-btn').addEventListener('click', function() {
+            var transcript = document.getElementById('transcription').innerText;
+            summarizeText(transcript);
+        });
+    </script>
+</body>
+</html>
