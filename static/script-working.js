@@ -47,8 +47,21 @@ function setSubject(subject) {
         if (!data.success) {
             alert('Failed to set subject.');
         }
+        // Fetch and display the summary
+        return fetch('/get_summary', {
+            method: 'GET'
+        });
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Display the summary message
+        displayMessage('bot', `This was taught in class today: ${data.summary}`, selectedSubject);
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
 }
+
 
 // Function to send a message
 function sendMessage() {
@@ -81,13 +94,15 @@ function sendMessage() {
 // Function to generate quiz
 function generateQuiz() {
     // Fetch quiz from server
-    fetch('/generate_quiz')
+    fetch('/generate_quiz_v2')
     .then(response => response.json())
     .then(data => {
         // Display quiz
         displayMessage('bot', data.quiz, selectedSubject);
+        console.log(data);
     })
     .catch(error => {
         console.error('Error:', error);
     });
 }
+
